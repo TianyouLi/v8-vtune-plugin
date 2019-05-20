@@ -1,0 +1,52 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Backup files
+*.bak
+/Debug/
+
+# CMake artifacts
+.settings
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+.project
+.cproject
+Makefile
+
+# output
+bin/
+lib/
+out/
+
+# nodejs modules
+node_modules/
+
+# generated documents
+documents/**
