@@ -1,0 +1,1 @@
+When you build this program, please keep the hierarchy of source code. Because the .so file invocation path is static.

@@ -4,5 +4,9 @@ PROJECT (v8-vtune-plugin)
 
 SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../out)
 
+INCLUDE_DIRECTORIES($ENV{INTEL_VTUNE}/include)
+LINK_DIRECTORIES($ENV{INTEL_VTUNE}/lib64)
+
 ADD_LIBRARY (v8-vtune-plugin SHARED
 	../src/libvtune.cc)
+TARGET_LINK_LIBRARIES(v8-vtune-plugin ittnotify)

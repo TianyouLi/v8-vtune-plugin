@@ -1,28 +1,28 @@
-#include <cstdlib>
-#include <iostream>
+#include <string.h>
+#include <ittnotify.h>
 
 #include "libvtune.h"
 
-
-/**
- * place a marker for Region of Interest(ROI)
- */
-static void mark(int n) {
-	int simics_magic_instr_dummy;
-	//__MAGIC_CASSERT((unsigned)(n) < 0x10000);
-	__asm__ __volatile__ ("cpuid"
-												: "=a" (simics_magic_instr_dummy)
-												: "a" (0x4711 | ((unsigned)(n) << 16))
-												: "ecx", "edx", "ebx");
-}
-
 int invoke(const char* params) {
-	int n = strtol(params, (char**)NULL, 10);
 
-  std::cout << "\ninput params: " << params
-            << "\n convert to : " << n << std::endl;
-  
-  mark(n);
+  int result = 0;
 
-  return n;
+  static __itt_domain* domain = NULL;
+
+  if(strncmp(params, "init:", 5) == 0) {
+	  domain = __itt_domain_create(params + 5);
+  } else if (strncmp(params, "start:", 6) == 0) {
+    __itt_string_handle* handle_start = __itt_string_handle_create(params + 6);
+	  __itt_task_begin(domain, __itt_null, __itt_null, handle_start);
+  } else if (strncmp(params, "end", 3) == 0) {
+	  __itt_task_end(domain);
+  } else if (strncmp(params, "name:", 5) == 0) {
+    __itt_thread_set_name(params + 5);
+  } else if (strncmp(params, "ignore", 6) == 0) {
+	  __itt_thread_ignore();
+  } else {
+	  result = 1;
+  }
+
+  return result;
 }
