@@ -1,12 +1,12 @@
 #include <iostream>
 #include "invokedynamic.h"
 
-#define dynamiclibrarypath "/home/hre/v8/v8-vtune-plugin/out/libv8-vtune-plugin.so"    //fill the dynamic library path here
+#define dynamiclibrarypath "/home/hre/v8/v8-vtune-plugin-new/v8-vtune-plugin/out/libv8-vtune-plugin.so"    //fill the dynamic library path here
 
 int main() {
   DynamicFunction dynamic_function_;
 
-  for(int i = 0; i < 1000000; i++) {
+  for(int i = 0; i < 100; i++) {
     std::cout << ".";
   }
 
@@ -14,23 +14,23 @@ int main() {
     std::cout << "\nDynamic initialization failed!" << std::endl; 
   }
 
-  if(dynamic_function_.invoke("init:MyTest")) {
-    std::cout << "\nInvoke start successfully!" << std::endl;
-  }
+//  if(dynamic_function_.invoke("init:MyTest")) {
+//    std::cout << "\nInvoke start successfully!" << std::endl;
+//  }
 
-  if(dynamic_function_.invoke("start:MyBenchmarkTest")) {
+  if(dynamic_function_.invoke("start mytest MyBenchmarkTest")) {
     std::cout << "\nInvoke start successfully!" << std::endl;
   }
 
   for(int i = 0; i < 4; i++) {
-    dynamic_function_.invoke("start:MyCreateThread");
-    for(int i = 0; i < 100000; i++) {
+    dynamic_function_.invoke("start mytest MyCreateThread");
+    for(int i = 0; i < 100; i++) {
       std::cout << ".";
     }
-    dynamic_function_.invoke("end");
+    dynamic_function_.invoke("end mytest");
   }
 
-  if(dynamic_function_.invoke("end")) {
+  if(dynamic_function_.invoke("end mytest")) {
     std::cout << "\nInvoke end successfully!" << std::endl;
   }
 

@@ -1,46 +1,97 @@
-#include <string.h>
-#include "ittnotifycall.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// This dynamic library is the wrapper of interface of the intel VTune Amplifier which enable your 
+// application to generate and control the collection of trace data during its execution. 
+// Create a task instance/trace the end of the current task:
+//    function name:  invoke
+//    parameters   :  const char* 
+//                    (Its format should be "operation_keyword domain_name task_name". 
+//                     And the operation keywords are "start" and "end").
+//    return value :  int
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "libvtune.h"
+#include "vtuneapi.h"
+
+shared_ptr<VTuneDomain> domainptr;
+
+std::map<string, int (*)(vector<string>&)> function_map = {
+  {"start", startTask},
+  {"end", endTask}
+};
+
+void split(const string& str, char delimiter, vector<string>& vparams) {
+  string::size_type baseindex = 0;
+  string::size_type offindex = str.find(delimiter);
+
+  while (offindex != string::npos) {
+    vparams.push_back(str.substr(baseindex, offindex-baseindex));
+    baseindex = ++offindex;
+    offindex = str.find(delimiter, offindex);
+
+    if (offindex == string::npos)
+      vparams.push_back(str.substr(baseindex, str.length()));
+  }
+}
+
+int startTask(vector<string>& vparams) {
+  int errcode = 0;
+
+  if(const char* domain_name = vparams[1].c_str()) {
+    
+    if(const char* task_name = vparams[2].c_str()) {
+
+      if(domainptr = VTuneDomain::createDomain(domain_name)) {
+
+        if(!domainptr->beginTask(task_name)){
+          errcode += TASK_BEGIN_FAILED;
+        }
+      } else {
+        errcode += CREATE_DOMAIN_FAILED;
+      }
+    } else {
+      errcode += NO_TASK_NAME;
+    }
+    
+  } else {
+    errcode = NO_DOMAIN_NAME;
+  }
+
+
+
+  return errcode;
+}
+
+int endTask(vector<string>& vparams) {
+  int errcode = 0;
+
+  if(const char* domain_name = vparams[1].c_str()) {
+    
+    if(domainptr = VTuneDomain::createDomain(domain_name)) {
+        domainptr->endTask();
+    } else {
+        errcode += CREATE_DOMAIN_FAILED;
+    }
+  } else {
+    errcode = NO_DOMAIN_NAME;
+  }
+
+
+
+  return errcode;
+}
 
 int invoke(const char* params) {
 
   int errcode = 0;
+  vector<string> vparams;
 
-  static ITT_DOMAIN* domain = NULL;
+  split(*(new string(params)), ' ', vparams);
 
-  if(strncmp(params, "init:", 5) == 0) {
-    if(*(params+5)) {
-      domain = call__itt_domain_create(params + 5);
-      if(!domain) {
-        errcode += CREATE_DOMAIN_FAILED;
-      }
-    } else {
-      errcode += NO_DOMAIN_NAME;
-    }
-  } else if (strncmp(params, "start:", 6) == 0) {
-    if(*(params + 6)) {
-      ITT_STRING_HANDLE* handle_start = call__itt_string_handle_create(params + 6);
-      if(handle_start) {
-        call__itt_task_begin(domain, __itt_null, __itt_null, handle_start);
-      } else {
-        errcode += CREATE_HANDLE_FAILED;
-      }
-      
-    } else {
-      errcode += NO_HANDLE_NAME;
-    }
-  } else if (strncmp(params, "end", 3) == 0) {
-	  call__itt_task_end(domain);
-  } else if (strncmp(params, "name:", 5) == 0) {
-    if(*(params + 5)) {
-      call__itt_thread_set_name(params + 5);
-    } else {
-      errcode += SET_THREAD_NAME_FAILED;
-    }
-  } else if (strncmp(params, "ignore", 6) == 0) {
-    call__itt_thread_ignore();
+  auto it = function_map.find(vparams[0]);
+  if(it!= function_map.end()) {
+    (it->second)(vparams);
   } else {
-	  errcode += UNKNOWN_PARAMS;
+    errcode += UNKNOWN_PARAMS;
   }
 
   return errcode;

@@ -5,9 +5,10 @@
 #include <map>
 #include <memory>
 //#include <ittnotifycall.h>
+#include <ittnotify.h>
 
-#define __itt_string_handle void*
-#define __itt_domain void
+//#define __itt_string_handle void*
+//#define __itt_domain void
 
 class VTuneDomain {
 

@@ -10,11 +10,7 @@ INCLUDE_DIRECTORIES($ENV{INTEL_VTUNE}/include)
 LINK_DIRECTORIES($ENV{INTEL_VTUNE}/lib64)
 
 ADD_LIBRARY (v8-vtune-plugin SHARED
-<<<<<<< HEAD
-	../src/libvtune.cc ../src/ittnotifycall.cc)
-TARGET_LINK_LIBRARIES(v8-vtune-plugin ittnotify)
-=======
 	../src/libvtune.cc
 	../src/vtuneapi.cc
 )
->>>>>>> upstream/master
+TARGET_LINK_LIBRARIES(v8-vtune-plugin ittnotify)
