@@ -1,0 +1,3 @@
+Before building the code with build.sh, set the environment variable INTEL_VTUNE to the vtune amplifier path in your system.
+eg:
+    export INTEL_VTUNE=/opt/intel/vtune_amplifier_2019.3.0.590814

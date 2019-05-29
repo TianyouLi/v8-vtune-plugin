@@ -4,10 +4,7 @@
 #include <string>
 #include <map>
 #include <memory>
-//#include <ittnotifycall.h>
-
-#define __itt_string_handle void*
-#define __itt_domain void
+#include <ittnotify.h>
 
 class VTuneDomain {
 
@@ -51,3 +48,4 @@ class VTuneDomain {
 };
 
 #endif
+

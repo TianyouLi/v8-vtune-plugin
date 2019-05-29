@@ -9,10 +9,11 @@ std::shared_ptr<VTuneDomain> VTuneDomain::createDomain(const char* domain_name)
   auto domain = getDomain(domain_name);
   
   if (domain == nullptr) {
-    __itt_domain* itt_domain = NULL; // call api
+    __itt_domain* itt_domain = __itt_domain_create(domain_name); // call api
     if (itt_domain != NULL) {
       std::string key(domain_name);
       std::shared_ptr<VTuneDomain> value(new VTuneDomain(itt_domain));
+      domain = value;
       domains_.insert(std::make_pair(key, value));
     }
   }
@@ -48,7 +49,7 @@ __itt_string_handle* VTuneDomain::getString(const char* str)
   if (it != string_handlers_.end()) {
     result = it->second;
   } else {
-    result = NULL; // call api
+    result = __itt_string_handle_create(str); // call api
     std::string key(str);
     string_handlers_.insert(std::make_pair(key, result));
   }
@@ -62,7 +63,7 @@ bool VTuneDomain::beginTask(const char* task_name)
   
   __itt_string_handle* name = getString(task_name);
   if (name != NULL) {
-    //    __itt_task_begin(domain_, __itt_null, __itt_null, name);
+    __itt_task_begin(domain_, __itt_null, __itt_null, name);
     result = true;
   }
   
@@ -71,5 +72,6 @@ bool VTuneDomain::beginTask(const char* task_name)
 
 void VTuneDomain::endTask()
 {
-  //  __itt_task_end(domain_);
+  __itt_task_end(domain_);
 }
+
