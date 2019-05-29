@@ -14,8 +14,6 @@
 
 using namespace std;
 
-shared_ptr<VTuneDomain> domainptr;
-
 map<string, int (*)(const vector<string>&)> function_map = {
   {"start", startTask},
   {"end", endTask}
@@ -42,7 +40,7 @@ int startTask(const vector<string>& vparams) {
     
     if (const char* task_name = vparams[2].c_str()) {
 
-      if (domainptr = VTuneDomain::createDomain(domain_name)) {
+      if (shared_ptr<VTuneDomain> domainptr = VTuneDomain::createDomain(domain_name)) {
 
         if (!domainptr->beginTask(task_name)){
           errcode += TASK_BEGIN_FAILED;
@@ -53,6 +51,7 @@ int startTask(const vector<string>& vparams) {
     } else {
       errcode += NO_TASK_NAME;
     }
+    
   } else {
     errcode = NO_DOMAIN_NAME;
   }
@@ -65,7 +64,7 @@ int endTask(const vector<string>& vparams) {
 
   if (const char* domain_name = vparams[1].c_str()) {
     
-    if (domainptr = VTuneDomain::createDomain(domain_name)) {
+    if (shared_ptr<VTuneDomain> domainptr = VTuneDomain::createDomain(domain_name)) {
         domainptr->endTask();
     } else {
         errcode += CREATE_DOMAIN_FAILED;
